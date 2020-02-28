@@ -10,7 +10,10 @@ tile_images = {'wall': pygame.image.load('data/stena.png'),
                'krai': pygame.image.load('data/krstena.png'),
                'ded': pygame.image.load('data/ded.png'),
                'Alina': pygame.image.load('data/Alina.png'),
-               'pauk': pygame.image.load('data/pauk1.png')}
+               'pauk': pygame.image.load('data/pauk1.png'),
+               'vih': pygame.image.load('data/vih.png'),
+               'key': pygame.image.load('data/kluch.png'),
+               'Lovushka': pygame.image.load('data/lowushka.png')}
 player_image = pygame.image.load('data/pers.png')
 
 tile_width = tile_height = 50
@@ -84,6 +87,7 @@ class Player(pygame.sprite.Sprite):
                                                    tile_height * pos_y + 5)
         self.pos_x = pos_x
         self.pos_y = pos_y
+        self.HP = 3
 
 
 class Tile(pygame.sprite.Sprite):
@@ -131,9 +135,20 @@ def generate(level, coord, nhod):
         elif level[y][x] == 'A':
             Tile('wall', x, y)
             Tile('Alina', x, y)
+        elif level[y][x] == '?':
+            Tile('vih', x, y)
         elif level[y][x] == 'S':
             Tile('wall', x, y)
             Tile('pauk', x, y)
+        elif level[y][x] == 'K':
+            Tile('wall', x, y)
+            Tile('key', x, y)
+        elif level[y][x] == 'L':
+            Tile('Lovushka', x, y)
+        elif level[y][x] == 'J':
+            Tile('wall', x, y)
+        elif level[y][x] == '1':
+            Tile('wall', x, y)
     else:
         if level[y][x] == '.':
             Tile2('empty', x, y)
@@ -144,12 +159,23 @@ def generate(level, coord, nhod):
         elif level[y][x] == 'D':
             Tile2('wall', x, y)
             Tile2('ded', x, y)
-        elif level[y][x] == 'A':
+        elif level[y][x] == 'K':
             Tile2('wall', x, y)
+            Tile2('key', x, y)
+        elif level[y][x] == '?':
+            Tile2('wih', x, y)
+        elif level[y][x] == 'A':
+            Tile2('vall', x, y)
             Tile2('Alina', x, y)
         elif level[y][x] == 'S':
             Tile2('wall', x, y)
             Tile2('pauk', x, y)
+        elif level[y][x] == 'L':
+            Tile2('Lovushka', x, y)
+        elif level[y][x] == 'J':
+            Tile2('wall', x, y)
+        elif level[y][x] == '1':
+            Tile2('wall', x, y)
 
 
 '''class Camera:
@@ -232,8 +258,35 @@ def SpiderTrigger():
             ('*Мурчит по-паучи*', ((level_x + 1) * 50 + 50, 140), 15, (255,
                                                                        255,
                                                                        0)))
-
     return text
+
+
+def LowushkaDeistv():
+    print('asdasdasdasdasdas')
+    if Nhod % 2 != 0:
+        player.HP -= 1
+        text = (
+            ('Вы попадаете в ловушку', ((level_x + 1) * 50, text_y), 20,
+             (255, 255, 0)),
+            ('Теперь ваше колличество HP: ' + str(player.HP), ((level_x +
+                                                                1) * 50,
+                                                               text_y + 50),
+             20, (255, 255, 0)))
+    else:
+        player2.HP -= 1
+        text = (
+            ('Вы попадаете в ловушку', ((level_x + 1) * 50, text_y), 20,(255, 255, 0)),
+            ('Теперь ваше колличество HP: ' + str(player2.HP), ((level_x + 1)
+                                                               * 50,text_y + 50),
+             20, (255, 255, 0)))
+    return text
+
+        
+        
+    
+    
+
+
 fl = True
 
 while running:
@@ -243,9 +296,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            
-            
-            
+  
         elif event.type == pygame.KEYDOWN:
             if fl:
                 if event.key == pygame.K_LEFT:
@@ -254,8 +305,17 @@ while running:
                         zone = load_level(nMap)[player.pos_y][player.pos_x - 1]
                         generate(load_level(nMap), (player.pos_y,
                                                     player.pos_x - 1), Nhod)
+                        if zone == 'J':
+                            player.pos_x -= 1
+                            player.rect.x -= 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
                         if zone == '#' or \
-                                zone == '@' or zone == '%':
+                                zone == '@' or zone == '%' or zone == 'L':
                             player.pos_x -= 1
                             player.rect.x -= 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
@@ -263,6 +323,8 @@ while running:
                                     ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
                             text_y += 100
+                            if zone == 'L':
+                                text =  LowushkaDeistv()
                         elif zone == 'D':
                             text = DedTrigger()
     
@@ -274,7 +336,16 @@ while running:
                         zone = load_level(nMap)[player2.pos_y][player2.pos_x - 1]
                         generate(load_level(nMap), (player2.pos_y,
                                                     player2.pos_x - 1), Nhod)
-                        if zone == '#' or zone == '@' or zone == '%':
+                        if zone == 'J':
+                            player2.pos_x -= 1
+                            player2.rect.x -= 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                        if zone == '#' or zone == '@' or zone == '%' or zone == 'L':
                             player2.pos_x -= 1
                             player2.rect.x -= 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
@@ -283,6 +354,8 @@ while running:
                                      ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
                             text_y += 100
+                            if zone == 'L':
+                                text =  LowushkaDeistv()
                         elif zone == 'D':
                             text = DedTrigger()
     
@@ -297,7 +370,16 @@ while running:
                         zone = load_level(nMap)[player.pos_y - 1][player.pos_x]
                         generate(load_level(nMap), (player.pos_y - 1,
                                                     player.pos_x), Nhod)
-                        if zone == '#' or zone == '@' or zone == '%':
+                        if zone == 'J':
+                            player.pos_y -= 1
+                            player.rect.y -= 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                        if zone == '#' or zone == '@' or zone == '%' or zone == 'L':
                             player.pos_y -= 1
                             player.rect.y -= 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
@@ -305,6 +387,8 @@ while running:
                                     ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
                             text_y += 100
+                            if zone == 'L':
+                                text =  LowushkaDeistv()
                         elif zone == 'D':
                             text = DedTrigger()
         
@@ -316,7 +400,16 @@ while running:
                         zone = load_level(nMap)[player2.pos_y - 1][player2.pos_x]
                         generate(load_level(nMap), (player2.pos_y - 1,
                                                     player2.pos_x), Nhod)
-                        if zone == '#' or zone == '@' or zone == '%':
+                        if zone == 'J':
+                            player2.pos_y -= 1
+                            player2.rect.y -= 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                        if zone == '#' or zone == '@' or zone == '%' or zone == 'L':
                             player2.pos_y -= 1
                             player2.rect.y -= 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
@@ -325,6 +418,8 @@ while running:
                                      ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
                             text_y += 100
+                            if zone == 'L':
+                                text =  LowushkaDeistv()
                         elif zone == 'D':
                             text = DedTrigger()
     
@@ -339,8 +434,19 @@ while running:
                         zone = load_level(nMap)[player.pos_y + 1][player.pos_x]
                         generate(load_level(nMap), (player.pos_y + 1,
                                                     player.pos_x), Nhod)
+                        if zone == 'J':
+                            player.pos_y += 1
+                            player.rect.y += 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                            
+                        
                         if zone == '#' or \
-                                zone == '@' or zone == '%':
+                                zone == '@' or zone == '%' or zone == 'L':
                             player.pos_y += 1
                             player.rect.y += 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
@@ -348,6 +454,8 @@ while running:
                                     ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
                             text_y += 100
+                            if zone == 'L':
+                                text = LowushkaDeistv()
                         elif zone == 'D':
                             text = DedTrigger()
     
@@ -359,13 +467,24 @@ while running:
                         zone = load_level(nMap)[player2.pos_y + 1][player2.pos_x]
                         generate(load_level(nMap), (player2.pos_y + 1,
                                                     player2.pos_x), Nhod)
-                        if zone == '#' or zone == '@' or zone == '%':
+                        if zone == 'J':
+                            player2.pos_y += 1
+                            player2.rect.y += 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                        if zone == '#' or zone == '@' or zone == '%' or zone == 'L':
                             player2.pos_y += 1
                             player2.rect.y += 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
                                      (255, 255, 0)),
                                     ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
+                            if zone == 'L':
+                                text = LowushkaDeistv()
                             text_y += 100
     
                         elif zone == 'D':
@@ -384,15 +503,27 @@ while running:
                         zone = load_level(nMap)[player.pos_y][player.pos_x + 1]
                         generate(load_level(nMap), (player.pos_y,
                                                     player.pos_x + 1), Nhod)
-                        if zone == '#' or \
-                                zone == '@' or zone == '%':
+                        if zone == 'J':
                             player.pos_x += 1
                             player.rect.x += 50
-                            text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
-                                     (255, 255, 0)),
-                                    ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
-                                     20, (255, 255, 0)))
-                            text_y += 100
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                        if zone == '#' or \
+                                zone == '@' or zone == '%' or zone == 'L':
+                            player.pos_x += 1
+                            player.rect.x += 50
+                            if zone == 'L':
+                                text = LowushkaDeistv()
+                            else:
+                                text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
+                                         (255, 255, 0)),
+                                        ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
+                                         20, (255, 255, 0)))
+                        
                         elif zone == 'D':
                             text = DedTrigger()
     
@@ -404,7 +535,16 @@ while running:
                         zone = load_level(nMap)[player2.pos_y][player2.pos_x + 1]
                         generate(load_level(nMap), (player2.pos_y,
                                                     player2.pos_x + 1), Nhod)
-                        if zone == '#' or zone == '@' or zone == '%':
+                        if zone == 'J':
+                            player2.pos_x += 1
+                            player2.rect.x += 50
+                            text = (
+                            ('Лязг металла', ((level_x + 1) * 50, text_y), 20,
+                             (255, 255, 0)),
+                            ('Трупный запах бьёт вам в лицо', ((level_x + 
+                                                                 1) * 50, text_y + 50),
+                             20, (255, 255, 0)))
+                        if zone == '#' or zone == '@' or zone == '%' or zone == 'L':
                             player2.pos_x += 1
                             player2.rect.x += 50
                             text = (('Тишина', ((level_x + 1) * 50, text_y), 20,
@@ -412,6 +552,9 @@ while running:
                                     ('Стук сердца', ((level_x + 1) * 50, text_y + 50),
                                      20, (255, 255, 0)))
                             text_y += 100
+                            if zone == 'L':
+                                LowushkaDeistv()
+                                
     
                         elif zone == 'D':
                             text = DedTrigger()

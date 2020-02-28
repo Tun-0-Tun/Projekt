@@ -20,8 +20,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>330</y>
+      <x>30</x>
+      <y>350</y>
       <width>231</width>
       <height>51</height>
      </rect>
@@ -190,16 +190,6 @@
     </property>
     <property name="text">
      <string>Ответ:</string>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>640</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
     </property>
    </widget>
   </widget>

@@ -3,11 +3,11 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QTableWidgetItem
 import sqlite3
 from PyQt5.QtGui import *
-from random import randint
+import xlsxwriter
 import random
 
 
-class MyWidget(QMainWindow):
+class studentWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('ggwp.ui', self)
@@ -24,6 +24,7 @@ class MyWidget(QMainWindow):
         self.pushButton_2.setEnabled(True)
         self.pushButton_3.setEnabled(True)
         self.pushButton.setEnabled(False)
+        self.textEdit.setEnabled(False)
 
         cur = self.con.cursor()
         if self.a == 0:
@@ -57,6 +58,8 @@ class MyWidget(QMainWindow):
             self.modified = {}
 
     def otv(self):
+        workbook = xlsxwriter.Workbook('Суммы.xlsx')
+        worksheet = workbook.add_worksheet()
         self.pushButton_2.setEnabled(False)
         a = self.lineEdit.text()
         f = open('баллы.txt', 'w')
@@ -72,11 +75,15 @@ class MyWidget(QMainWindow):
         f.write('Итог - ' + ' ' + str(self.score))
         f.close()
 
+        worksheet.write(1, 0, self.name())
+        worksheet.write(1, 1, str(self.score))
+        workbook.close()
+
     def Ref(self):
         self.update_result()
 
 
 app = QApplication(sys.argv)
-ex = MyWidget()
+ex = studentWidget()
 ex.show()
 sys.exit(app.exec_())
